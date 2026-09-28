@@ -1,50 +1,50 @@
-name: BMI_CI                                        # "BMI_CI" workflow, name is optional
+name: BMI CI
 
 env:
-  AZURE_WEBAPP_NAME: gc-bmicalculator-ga            # set this to your application's name
-  
-  AZURE_WEBAPP_PACKAGE_PATH: 'publish/myapp'        # set this to the path to your web app project
-
+  AZURE_WEBAPP_NAME: a00086200-bmi2026
+  AZURE_WEBAPP_PACKAGE_PATH: publish/myapp
 
 on:
- workflow_dispatch:        
-# push:                                             #  workflow_dispatch for manually triggered
-#   branches: [ master ]
- 
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
-  build:                                            # "build" job
-    runs-on: windows-latest                         # runner
+  build:
+    runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v5
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v5
-      with:
-        dotnet-version: 10.0.x
-    - name: Build for Release
-      run: dotnet build --configuration Release
-    - name: Run unit tests
-      run: dotnet test bmiUnitTestProject/bmiUnitTestProject.csproj --no-restore --collect "Code coverage" -l:trx
-   
-    - name: Publish Unit Test Results
-      uses: dorny/test-reporter@v3
-      with:
-        artifact: ''
-        name: MS Tests                  
-        path: '**.trx'
-        reporter: 'dotnet-trx'                     
+      - uses: actions/checkout@v5
 
-    - name: Publish
-      run: dotnet publish -c Release --property:PublishDir=${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
-      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
 
-# Deploy to Azure Web apps
-    - name: Run Azure webapp deploy action using publish profile credentials
-      uses: azure/webapps-deploy@v2
-      with: 
-        app-name: ${{ env.AZURE_WEBAPP_NAME }}                        # your app name
-        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE  }} # Define secret variable in repository settings as per action documentation
-        package: 'bmi2021/${{ env.AZURE_WEBAPP_PACKAGE_PATH }}'
-       
+      - name: Restore
+        run: dotnet restore bmi2024.sln
 
+      - name: Build for Release
+        run: dotnet build bmi2024.sln --configuration Release --no-restore
+
+      - name: Run unit tests with coverage
+        run: dotnet test bmiUnitTestProject/bmiUnitTestProject.csproj --configuration Release --no-build --settings bmiUnitTestProject/coverlet.runsettings --collect "XPlat Code Coverage" --logger trx
+
+      - name: Publish unit test results
+        if: always()
+        uses: dorny/test-reporter@v3
+        with:
+          name: MS Tests
+          path: '**/*.trx'
+          reporter: dotnet-trx
+
+      - name: Publish application
+        run: dotnet publish bmi2021/bmi2026.csproj --configuration Release --no-build --output ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+
+      - name: Deploy to Azure App Service
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
