@@ -8,6 +8,10 @@ for the **TU Dublin Micro-credential in CI/CD (DevOps)**.
 
 [View the deployed application](https://a00086200-bmi2026.azurewebsites.net)
 
+![BMI Calculator home page with an empty measurement form](assets/screencapture-a00086200-bmi2026-azurewebsites-net-2026-09-29-22_23_59.png)
+
+*Figure 1: The deployed calculator ready for user input.*
+
 ## Project information
 
 | Role | Details |
@@ -63,6 +67,10 @@ visible labels, keyboard focus styles and field-specific validation messages.
 - Displays the result to one decimal place.
 - Classifies the result as Underweight, Normal, Overweight or Obese.
 
+![BMI Calculator displaying an underweight result of 12.5](assets/screencapture-a00086200-bmi2026-azurewebsites-net-2026-09-29-22_29_14.png)
+
+*Figure 2: A completed calculation showing the BMI value and category.*
+
 ### Form validation
 
 - Weight in stone must be between 5 and 50.
@@ -70,6 +78,10 @@ visible labels, keyboard focus styles and field-specific validation messages.
 - Height in feet must be between 4 and 7.
 - Additional inches must be between 0 and 11.
 - A result is displayed only when every field is valid.
+
+![BMI Calculator showing validation errors for measurements above the permitted maximum values](assets/screencapture-a00086200-bmi2026-azurewebsites-net-2026-09-29-22_31_12.png)
+
+*Figure 3: Client-side validation prevents out-of-range measurements from being submitted.*
 
 ### Navigation and supporting pages
 
@@ -135,6 +147,10 @@ The suite contains **26 passing tests**. Coverage for the application C# code is
 Generated Razor code and the blocking process entry point are not included in
 the coverage calculation.
 
+![HTML code coverage report showing 100 percent line and branch coverage](assets/screencapture-file-C-Users-Sergiy-Desktop-bmi2026-artifacts-coverage-report-index-html-2026-09-29-22_27_13.png)
+
+*Figure 4: The generated HTML coverage report, including class-level results.*
+
 ### Test cases
 
 | Area | Test | Expected result | Status |
@@ -149,6 +165,10 @@ the coverage calculation.
 | Error handling | Load an error page with and without an active request | Correct request reference is selected | Pass |
 | Application | Load the home page in Development and Production | HTTP 200 and expected page content | Pass |
 | Privacy | Load `/Privacy` | HTTP 200 and privacy information | Pass |
+
+![BMI Calculator accepting the maximum permitted values and displaying the calculated result](assets/screencapture-a00086200-bmi2026-azurewebsites-net-2026-09-29-22_32_09.png)
+
+*Figure 5: Boundary testing with the maximum valid value for every measurement field.*
 
 ### Manual testing
 
