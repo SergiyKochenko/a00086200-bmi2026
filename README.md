@@ -2,7 +2,8 @@
 
 [![BMI CI](https://github.com/SergiyKochenko/a00086200-bmi2026/actions/workflows/bmi_ci.yml/badge.svg)](https://github.com/SergiyKochenko/a00086200-bmi2026/actions/workflows/bmi_ci.yml)
 
-An ASP.NET Core Razor Pages BMI calculator targeting .NET 10.
+A small ASP.NET Core Razor Pages app that calculates BMI from imperial
+measurements. It targets .NET 10 and is hosted on Azure App Service.
 
 ## Live application
 
@@ -10,16 +11,21 @@ https://a00086200-bmi2026.azurewebsites.net
 
 ## Tests
 
-The test suite covers BMI calculations and categories, validation boundaries,
-page models, error handling, and both Development and Production application
-pipelines.
+Run the tests from the repository root:
 
 ```powershell
 dotnet test bmi2024.sln --settings bmiUnitTestProject/coverlet.runsettings --collect:"XPlat Code Coverage"
 ```
 
-The application C# code has 100% line and branch coverage. Generated Razor
-markup and the blocking process entry point are excluded from unit coverage.
+The suite currently contains 26 tests and has 100% line and branch coverage for
+the application C# code. Generated Razor markup and the process entry point are
+not included in the coverage figure.
+
+## Run locally
+
+```powershell
+dotnet run --project bmi2021/bmi2026.csproj
+```
 
 ## Deployment
 

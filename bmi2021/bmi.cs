@@ -1,88 +1,78 @@
-﻿// model classes for BMI calculator
-// GC
-
-using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace BMICalculator
+namespace BMICalculator;
+
+public enum BMICategory
 {
-    public enum BMICategory { Underweight, Normal, Overweight, Obese };
+    Underweight,
+    Normal,
+    Overweight,
+    Obese
+}
 
-    public class BMI
+public class BMI
+{
+    private const int PoundsPerStone = 14;
+    private const int InchesPerFoot = 12;
+    private const double PoundsToKilograms = 0.453592;
+    private const double InchesToMetres = 0.0254;
+
+    [Display(Name = "Weight (stone)")]
+    [Required(ErrorMessage = "Enter your weight in stone")]
+    [Range(5, 50, ErrorMessage = "Stone must be between 5 and 50")]
+    public int? WeightStones { get; set; }
+
+    [Display(Name = "Additional pounds")]
+    [Required(ErrorMessage = "Enter 0 if there are no additional pounds")]
+    [Range(0, 13, ErrorMessage = "Pounds must be between 0 and 13")]
+    public int? WeightPounds { get; set; }
+
+    [Display(Name = "Height (feet)")]
+    [Required(ErrorMessage = "Enter your height in feet")]
+    [Range(4, 7, ErrorMessage = "Feet must be between 4 and 7")]
+    public int? HeightFeet { get; set; }
+
+    [Display(Name = "Additional inches")]
+    [Required(ErrorMessage = "Enter 0 if there are no additional inches")]
+    [Range(0, 11, ErrorMessage = "Inches must be between 0 and 11")]
+    public int? HeightInches { get; set; }
+
+    [Display(Name = "Your BMI")]
+    [DisplayFormat(DataFormatString = "{0:F1}")]
+    public double BMIValue
     {
-        const double UnderWeightUpperLimit = 18.4;              // inclusive upper limit
-        const double NormalWeightUpperLimit = 24.9;
-        const double OverWeightUpperLimit = 29.9;               // Obese from 30 +
-
-        // conversion factors from imperial to metric
-        const double PoundsToKgs = 0.453592;
-        const double InchestoMetres = 0.0254;
-
-        [Display(Name = "Weight - Stones")]
-        [Range(5, 50, ErrorMessage = "Stones must be between 5 and 50")]                              // max 50 stone
-        public int WeightStones { get; set; }
-
-        [Display(Name = "Pounds")]
-        [Range(0, 13, ErrorMessage = "Pounds must be between 0 and 13")]                              // 14 lbs in a stone
-        public int WeightPounds { get; set; }
-
-        [Display(Name = "Height - Feet")]
-        [Range(4, 7, ErrorMessage = "Feet must be between 4 and 7")]                               // max 7 feet
-        public int HeightFeet { get; set; }
-
-        [Display(Name = "Inches")]
-        [Range(0, 11, ErrorMessage = "Inches must be between 0 and 11")]                              // 12 inches in a foot
-        public int HeightInches { get; set; }
-
-        // calculate BMI, display to 2 decimal places
-        [Display(Name = "Your BMI is")]
-        [DisplayFormat(DataFormatString = "{0:F2}")]
-        public double BMIValue
+        get
         {
-            get
-            {
-                // bmi = weight in Kgs / height in metres squared
+            var weightInPounds = WeightStones!.Value * PoundsPerStone + WeightPounds!.Value;
+            var heightInInches = HeightFeet!.Value * InchesPerFoot + HeightInches!.Value;
+            var weightInKilograms = weightInPounds * PoundsToKilograms;
+            var heightInMetres = heightInInches * InchesToMetres;
 
-                double totalWeightInPounds = (WeightStones * 14) + WeightPounds;
-                double totalHeightInInches = (HeightFeet * 12) + HeightInches;
-
-                // do conversions to metric
-                double totalWeightInKgs = totalWeightInPounds * PoundsToKgs;
-                double totalHeightInMetres = totalHeightInInches * InchestoMetres;
-
-                double bmi = totalWeightInKgs / (Math.Pow(totalHeightInMetres, 2));
-
-                return bmi;
-            }
+            return weightInKilograms / Math.Pow(heightInMetres, 2);
         }
+    }
 
-        // calculate BMI category 
-        [Display(Name = "Your BMI Category is")]
-        public BMICategory BMICategory
+    [Display(Name = "Category")]
+    public BMICategory BMICategory
+    {
+        get
         {
-            get
+            if (BMIValue < 18.5)
             {
-                double bmi = this.BMIValue;
-
-                // calculate BMI category based on upper limits
-                if (bmi <= UnderWeightUpperLimit)
-                {
-                    return BMICategory.Underweight;
-                }
-                else if (bmi <= NormalWeightUpperLimit)
-                {
-                    return BMICategory.Normal;
-                }
-                else if (bmi <= OverWeightUpperLimit)
-                {
-                    return BMICategory.Overweight;
-                }
-                else
-                {
-                    return BMICategory.Obese;
-                }
+                return BMICategory.Underweight;
             }
+
+            if (BMIValue < 25)
+            {
+                return BMICategory.Normal;
+            }
+
+            if (BMIValue < 30)
+            {
+                return BMICategory.Overweight;
+            }
+
+            return BMICategory.Obese;
         }
     }
 }
-

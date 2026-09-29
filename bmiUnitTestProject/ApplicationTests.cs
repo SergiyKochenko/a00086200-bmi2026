@@ -1,10 +1,7 @@
-using System;
 using System.Net;
-using System.Threading.Tasks;
 using bmi2021;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -16,9 +13,9 @@ public class ApplicationTests
     [TestMethod]
     [DataRow("Development")]
     [DataRow("Production")]
-    public async Task Application_StartsAndServesTheBmiPageInEveryPipeline(string environment)
+    public async Task HomePage_LoadsInEachEnvironment(string environment)
     {
-        using var host = Program.CreateHostBuilder(Array.Empty<string>())
+        using var host = Program.CreateHostBuilder([])
             .ConfigureWebHost(webBuilder =>
             {
                 webBuilder.UseEnvironment(environment);
@@ -27,22 +24,29 @@ public class ApplicationTests
             .Build();
 
         await host.StartAsync();
-        using var response = await host.GetTestClient().GetAsync("/");
+        using var client = host.GetTestClient();
+        client.BaseAddress = new Uri("https://localhost");
+        using var response = await client.GetAsync("/");
         var html = await response.Content.ReadAsStringAsync();
 
         Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-        StringAssert.Contains(html, "BMI calculator");
+        StringAssert.Contains(html, "Check your body mass index");
     }
 
     [TestMethod]
-    public void Startup_ExposesItsConfiguration()
+    public async Task PrivacyPage_ExplainsHowMeasurementsAreHandled()
     {
-        var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection()
+        using var host = Program.CreateHostBuilder([])
+            .ConfigureWebHost(webBuilder => webBuilder.UseTestServer())
             .Build();
 
-        var startup = new Startup(configuration);
+        await host.StartAsync();
+        using var client = host.GetTestClient();
+        client.BaseAddress = new Uri("https://localhost");
+        using var response = await client.GetAsync("/Privacy");
+        var html = await response.Content.ReadAsStringAsync();
 
-        Assert.AreSame(configuration, startup.Configuration);
+        Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+        StringAssert.Contains(html, "does not create an account");
     }
 }

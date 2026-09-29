@@ -1,15 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace BMICalculator.Pages
+namespace BMICalculator.Pages;
+
+public class BmiModel : PageModel
 {
-    public class BmiModel : PageModel
+    [BindProperty]
+    public BMI BMI { get; set; } = new();
+
+    public bool HasResult { get; private set; }
+
+    public void OnPost()
     {
-        [BindProperty]
-        public BMI BMI { get; set; }
+        HasResult = ModelState.IsValid;
     }
 }

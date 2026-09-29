@@ -4,7 +4,6 @@ using BMICalculator.Pages;
 using bmi2021.Pages;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace bmiUnitTestProject;
@@ -13,19 +12,40 @@ namespace bmiUnitTestProject;
 public class PageModelTests
 {
     [TestMethod]
-    public void BmiPage_StoresTheBoundBmiModel()
+    public void BmiPage_ShowsAResultForValidInput()
     {
-        var expected = new BMI();
-        var page = new BmiModel { BMI = expected };
+        var page = new BmiModel
+        {
+            BMI = new BMI
+            {
+                WeightStones = 12,
+                WeightPounds = 0,
+                HeightFeet = 5,
+                HeightInches = 10
+            }
+        };
 
-        Assert.AreSame(expected, page.BMI);
+        page.OnPost();
+
+        Assert.IsTrue(page.HasResult);
+    }
+
+    [TestMethod]
+    public void BmiPage_HidesTheResultWhenValidationFails()
+    {
+        var page = new BmiModel();
+        page.ModelState.AddModelError("BMI.WeightStones", "Enter a weight");
+
+        page.OnPost();
+
+        Assert.IsFalse(page.HasResult);
     }
 
     [TestMethod]
     [DataRow(null, false)]
     [DataRow("", false)]
     [DataRow("request-123", true)]
-    public void ErrorPage_ShowRequestIdReflectsWhetherAnIdExists(string requestId, bool expected)
+    public void ErrorPage_OnlyShowsARequestIdWhenOneExists(string? requestId, bool expected)
     {
         var page = CreateErrorModel();
         page.RequestId = requestId;
@@ -34,7 +54,7 @@ public class PageModelTests
     }
 
     [TestMethod]
-    public void ErrorPage_OnGetUsesTheHttpTraceIdentifierWhenThereIsNoActivity()
+    public void ErrorPage_UsesTheTraceIdentifierWhenThereIsNoActivity()
     {
         var previousActivity = Activity.Current;
         Activity.Current = null;
@@ -54,9 +74,9 @@ public class PageModelTests
     }
 
     [TestMethod]
-    public void ErrorPage_OnGetPrefersTheCurrentActivityId()
+    public void ErrorPage_UsesTheCurrentActivityIdWhenAvailable()
     {
-        using var activity = new Activity("unit-test").Start();
+        using var activity = new Activity("test request").Start();
         var page = CreateErrorModel("trace-ignored");
 
         page.OnGet();
@@ -64,18 +84,10 @@ public class PageModelTests
         Assert.AreEqual(activity.Id, page.RequestId);
     }
 
-    [TestMethod]
-    public void PrivacyPage_OnGetCompletesSuccessfully()
-    {
-        var page = new PrivacyModel(NullLogger<PrivacyModel>.Instance);
-
-        page.OnGet();
-    }
-
     private static ErrorModel CreateErrorModel(string traceIdentifier = "trace")
     {
         var context = new DefaultHttpContext { TraceIdentifier = traceIdentifier };
-        return new ErrorModel(NullLogger<ErrorModel>.Instance)
+        return new ErrorModel
         {
             PageContext = new PageContext { HttpContext = context }
         };

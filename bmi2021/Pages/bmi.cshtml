@@ -1,57 +1,68 @@
-﻿@page
+@page
 @model BMICalculator.Pages.BmiModel
 
 @{
     ViewData["Title"] = "BMI calculator";
 }
 
-<h2>BMI Calculator 2026 - GA - Welcome to CSD, hope you are enjoying the module so far ...</h2>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="BMI.WeightStones" class="control-label"></label>
-                <input asp-for="BMI.WeightStones" class="form-control" />
-                <span asp-validation-for="BMI.WeightStones" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="BMI.WeightPounds" class="control-label"></label>
-                <input asp-for="BMI.WeightPounds" class="form-control" />
-                <span asp-validation-for="BMI.WeightPounds" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="BMI.HeightFeet" class="control-label"></label>
-                <input asp-for="BMI.HeightFeet" class="form-control" />
-                <span asp-validation-for="BMI.HeightFeet" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="BMI.HeightInches" class="control-label"></label>
-                <input asp-for="BMI.HeightInches" class="form-control" />
-                <span asp-validation-for="BMI.HeightInches" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Calculate" class="btn btn-light" />
-            </div>
-            @if (Request.Method == "POST")
-            {
-                <div>
-                    @Html.DisplayNameFor(m => m.BMI.BMIValue)
-                    @Html.DisplayFor(m => m.BMI.BMIValue)
+<section class="calculator-page">
+    <header class="page-heading">
+        <p class="eyebrow">BMI calculator</p>
+        <h1>Check your body mass index</h1>
+        <p>Enter your weight and height using stone, pounds, feet and inches.</p>
+    </header>
+
+    <div class="calculator-card @(Model.HasResult ? "with-result" : "")">
+        <form method="post" class="measurement-form">
+            <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+            <fieldset>
+                <legend>Weight</legend>
+                <div class="measurement-row">
+                    <div class="field">
+                        <label asp-for="BMI.WeightStones"></label>
+                        <input asp-for="BMI.WeightStones" min="5" max="50" inputmode="numeric" />
+                        <span asp-validation-for="BMI.WeightStones"></span>
+                    </div>
+                    <div class="field">
+                        <label asp-for="BMI.WeightPounds"></label>
+                        <input asp-for="BMI.WeightPounds" min="0" max="13" inputmode="numeric" />
+                        <span asp-validation-for="BMI.WeightPounds"></span>
+                    </div>
                 </div>
-                <div>
-                    @Html.DisplayNameFor(m => m.BMI.BMICategory)
-                    @Html.DisplayFor(m => m.BMI.BMICategory)
+            </fieldset>
+
+            <fieldset>
+                <legend>Height</legend>
+                <div class="measurement-row">
+                    <div class="field">
+                        <label asp-for="BMI.HeightFeet"></label>
+                        <input asp-for="BMI.HeightFeet" min="4" max="7" inputmode="numeric" />
+                        <span asp-validation-for="BMI.HeightFeet"></span>
+                    </div>
+                    <div class="field">
+                        <label asp-for="BMI.HeightInches"></label>
+                        <input asp-for="BMI.HeightInches" min="0" max="11" inputmode="numeric" />
+                        <span asp-validation-for="BMI.HeightInches"></span>
+                    </div>
                 </div>
-            }
+            </fieldset>
+
+            <button type="submit" class="calculate-button">Calculate BMI</button>
         </form>
+
+        @if (Model.HasResult)
+        {
+            <aside class="result-card" aria-live="polite">
+                <p class="result-label">Your BMI</p>
+                <p class="result-value">@Model.BMI.BMIValue.ToString("F1")</p>
+                <p class="result-category">@Model.BMI.BMICategory</p>
+                <p class="result-note">BMI is a general screening measure and does not replace medical advice.</p>
+            </aside>
+        }
     </div>
-
-</div>
-
+</section>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <partial name="_ValidationScriptsPartial" />
 }
-

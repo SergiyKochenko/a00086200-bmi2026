@@ -1,8 +1,19 @@
-﻿@page
+@page
 @model PrivacyModel
 @{
-    ViewData["Title"] = "Privacy Policy";
+    ViewData["Title"] = "Privacy";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<section class="content-page">
+    <p class="eyebrow">Privacy</p>
+    <h1>Your measurements stay private.</h1>
+    <p>
+        The calculator uses the values you enter only to calculate the result shown on the page.
+        It does not create an account or save your height, weight or BMI in a database.
+    </p>
+    <p>
+        Like most hosted websites, the server may keep standard technical logs for reliability
+        and security. These can include the time of a request, the requested page and an IP address.
+    </p>
+    <a class="text-link" asp-page="/bmi">Back to the calculator</a>
+</section>
