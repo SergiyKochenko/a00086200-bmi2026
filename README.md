@@ -23,5 +23,6 @@ markup and the blocking process entry point are excluded from unit coverage.
 
 ## Deployment
 
-Run the `BMI CI` workflow manually in GitHub Actions to build, test, publish,
-and deploy the application to Azure App Service.
+The `BMI CI` workflow runs automatically for pushes and pull requests to
+`master`, and it can also be started manually. Pull requests build and test the
+application; pushes and manual runs also deploy it to Azure App Service.

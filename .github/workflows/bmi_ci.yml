@@ -5,6 +5,12 @@ env:
   AZURE_WEBAPP_PACKAGE_PATH: publish/myapp
 
 on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
   workflow_dispatch:
 
 permissions:
@@ -43,6 +49,7 @@ jobs:
         run: dotnet publish bmi2021/bmi2026.csproj --configuration Release --no-build --output ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
       - name: Deploy to Azure App Service
+        if: github.event_name != 'pull_request'
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
