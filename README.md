@@ -25,12 +25,13 @@ for the **TU Dublin Micro-credential in CI/CD (DevOps)**.
 1. [UX and UI](#ux-and-ui)
 2. [Features](#features)
 3. [Technologies used](#technologies-used)
-4. [Testing](#testing)
-5. [Issues and troubleshooting](#issues-and-troubleshooting)
-6. [Deployment](#deployment)
-7. [Credits](#credits)
-8. [Acknowledgements](#acknowledgements)
-9. [Disclaimer](#disclaimer)
+4. [DevOps implementation](#devops-implementation)
+5. [Testing](#testing)
+6. [Issues and troubleshooting](#issues-and-troubleshooting)
+7. [Deployment](#deployment)
+8. [Credits](#credits)
+9. [Acknowledgements](#acknowledgements)
+10. [Disclaimer](#disclaimer)
 
 ## UX and UI
 
@@ -103,6 +104,8 @@ and deploys it to Azure App Service.
 
 Pull requests run the build and test stages without deploying. Pushes to
 `master`, and manually started workflow runs, also deploy the application.
+The complete process is described in the
+[DevOps implementation](#devops-implementation) section.
 
 ### Features left to implement
 
@@ -124,6 +127,50 @@ Possible future improvements include:
 - [GitHub Actions](https://docs.github.com/actions) — CI/CD automation.
 - [Microsoft Azure App Service](https://azure.microsoft.com/products/app-service/) — application hosting.
 - Git and GitHub — version control and repository hosting.
+
+## DevOps implementation
+
+This project uses GitHub Actions to provide a repeatable CI/CD pipeline from the
+GitHub repository to Azure App Service. The workflow definition is stored in
+[`.github/workflows/bmi_ci.yml`](.github/workflows/bmi_ci.yml), so changes to the
+pipeline are version-controlled alongside the application.
+
+```mermaid
+flowchart LR
+    A[Push, pull request or manual run] --> B[Restore dependencies]
+    B --> C[Build in Release mode]
+    C --> D[Run 26 tests with coverage]
+    D --> E[Publish test results]
+    E --> F[Publish application package]
+    F --> G{Pull request?}
+    G -- Yes --> H[Finish without deployment]
+    G -- No --> I[Deploy to Azure App Service]
+```
+
+### Workflow triggers
+
+| Event | Build and test | Deploy to Azure |
+| :--- | :---: | :---: |
+| Pull request targeting `master` | Yes | No |
+| Push to `master` | Yes | Yes |
+| Manual workflow run | Yes | Yes |
+
+The Release build and all 26 automated tests must pass before the application is
+published and deployed. Test results appear as an **MS Tests** check in GitHub,
+while the workflow badge at the top of this README shows the current pipeline
+status. The test suite provides 100% line and branch coverage for the selected
+application code.
+
+### Deployment secret
+
+Azure authentication is provided through the GitHub Actions repository secret
+`AZURE_WEBAPP_PUBLISH_PROFILE`. GitHub encrypts the saved value and supplies it
+to the deployment step only while the workflow is running. The publish profile
+is not stored in the repository, workflow file or README.
+
+![GitHub Actions repository secret configuration showing AZURE_WEBAPP_PUBLISH_PROFILE](assets/screencapture-github-SergiyKochenko-a00086200-bmi2026-settings-secrets-actions-2026-09-30-21_23_05.png)
+
+*Figure 4: The GitHub Actions repository secret used to authenticate the Azure deployment. The protected value is not displayed.*
 
 ## Testing
 
@@ -149,7 +196,7 @@ the coverage calculation.
 
 ![HTML code coverage report showing 100 percent line and branch coverage](assets/screencapture-file-C-Users-Sergiy-Desktop-bmi2026-artifacts-coverage-report-index-html-2026-09-29-22_27_13.png)
 
-*Figure 4: The generated HTML coverage report, including class-level results.*
+*Figure 5: The generated HTML coverage report, including class-level results.*
 
 ### Test cases
 
@@ -168,7 +215,7 @@ the coverage calculation.
 
 ![BMI Calculator accepting the maximum permitted values and displaying the calculated result](assets/screencapture-a00086200-bmi2026-azurewebsites-net-2026-09-29-22_32_09.png)
 
-*Figure 5: Boundary testing with the maximum valid value for every measurement field.*
+*Figure 6: Boundary testing with the maximum valid value for every measurement field.*
 
 ### Manual testing
 
