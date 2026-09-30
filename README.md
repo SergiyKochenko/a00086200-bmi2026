@@ -2,9 +2,11 @@
 
 [![BMI CI](https://github.com/SergiyKochenko/a00086200-bmi2026/actions/workflows/bmi_ci.yml/badge.svg)](https://github.com/SergiyKochenko/a00086200-bmi2026/actions/workflows/bmi_ci.yml)
 
-The BMI Calculator is an ASP.NET Core Razor Pages application that calculates an
-adult body mass index from imperial measurements. It was created as practice work
-for the **TU Dublin Micro-credential in CI/CD (DevOps)**.
+I built this BMI Calculator as practice work for the **TU Dublin
+Micro-credential in CI/CD (DevOps)**. It is a small ASP.NET Core Razor Pages
+application that calculates an adult BMI from imperial measurements. The main
+purpose of the project was to practise the complete route from writing the code
+to testing it and deploying it through a CI/CD pipeline.
 
 [View the deployed application](https://a00086200-bmi2026.azurewebsites.net)
 
@@ -37,8 +39,8 @@ for the **TU Dublin Micro-credential in CI/CD (DevOps)**.
 
 ### Project goals
 
-The application was built to demonstrate a complete CI/CD workflow around a
-small web application. A user should be able to:
+I kept the application itself deliberately small so that I could concentrate on
+the build, test and deployment process. A user should be able to:
 
 - enter weight in stone and additional pounds;
 - enter height in feet and additional inches;
@@ -46,18 +48,17 @@ small web application. A user should be able to:
 - understand validation errors without losing entered values;
 - use the calculator on desktop and mobile devices.
 
-The development workflow should also build, test and deploy the application in a
-repeatable way whenever code is pushed to the `master` branch.
+My other goal was to make the build repeatable. A push to `master` should run the
+same build and tests every time before the application is deployed.
 
 ### Design
 
-The interface uses a simple green, white and grey colour palette. The calculator
-is presented in a centred card with related weight and height fields grouped
-together. When a calculation succeeds, the result appears in a separate panel so
-that it is easy to identify.
+I chose a simple green, white and grey colour palette and kept the calculator in
+one centred card. Weight and height are grouped separately. After a successful
+calculation, the result appears in its own panel so it is easy to spot.
 
-The layout changes to a single column on smaller screens. Form controls have
-visible labels, keyboard focus styles and field-specific validation messages.
+On a smaller screen the layout changes to one column. I also kept visible form
+labels, keyboard focus styles and a separate validation message for each field.
 
 ## Features
 
@@ -98,9 +99,9 @@ sizes. The mobile navigation can be expanded using the keyboard or pointer.
 
 ### Continuous integration and deployment
 
-The `BMI CI` GitHub Actions workflow restores dependencies, builds the solution,
-runs the automated test suite, publishes test results, packages the application
-and deploys it to Azure App Service.
+I use the `BMI CI` GitHub Actions workflow to restore the dependencies, build the
+solution, run the tests, publish their results, package the application and
+deploy it to Azure App Service.
 
 Pull requests run the build and test stages without deploying. Pushes to
 `master`, and manually started workflow runs, also deploy the application.
@@ -109,7 +110,7 @@ The complete process is described in the
 
 ### Features left to implement
 
-Possible future improvements include:
+If I continue the project, the next improvements would be:
 
 - an option to use metric measurements;
 - a short explanation of each BMI category;
@@ -130,10 +131,10 @@ Possible future improvements include:
 
 ## DevOps implementation
 
-This project uses GitHub Actions to provide a repeatable CI/CD pipeline from the
-GitHub repository to Azure App Service. The workflow definition is stored in
-[`.github/workflows/bmi_ci.yml`](.github/workflows/bmi_ci.yml), so changes to the
-pipeline are version-controlled alongside the application.
+The CI/CD pipeline runs in GitHub Actions and deploys to Azure App Service. I
+keep its definition in
+[`.github/workflows/bmi_ci.yml`](.github/workflows/bmi_ci.yml), which means the
+pipeline changes are recorded in Git along with the application code.
 
 ```mermaid
 flowchart LR
@@ -155,18 +156,18 @@ flowchart LR
 | Push to `master` | Yes | Yes |
 | Manual workflow run | Yes | Yes |
 
-The Release build and all 26 automated tests must pass before the application is
-published and deployed. Test results appear as an **MS Tests** check in GitHub,
-while the workflow badge at the top of this README shows the current pipeline
-status. The test suite provides 100% line and branch coverage for the selected
-application code.
+A failed build or test stops the later publish and deployment steps. When all 26
+tests pass, GitHub shows them in the **MS Tests** check and then deploys the
+published application. The badge at the top of this README shows the latest
+workflow status. The tested application code currently has 100% line and branch
+coverage.
 
 ### Deployment secret
 
-Azure authentication is provided through the GitHub Actions repository secret
-`AZURE_WEBAPP_PUBLISH_PROFILE`. GitHub encrypts the saved value and supplies it
-to the deployment step only while the workflow is running. The publish profile
-is not stored in the repository, workflow file or README.
+I saved the Azure publish profile as the GitHub repository secret
+`AZURE_WEBAPP_PUBLISH_PROFILE`. GitHub passes it to the deployment step while the
+workflow runs. The actual publish profile is not saved in the repository,
+workflow file or README.
 
 ![GitHub Actions repository secret configuration showing AZURE_WEBAPP_PUBLISH_PROFILE](assets/screencapture-github-SergiyKochenko-a00086200-bmi2026-settings-secrets-actions-2026-09-30-21_23_05.png)
 
@@ -184,7 +185,8 @@ dotnet test bmi2024.sln `
   --collect "XPlat Code Coverage"
 ```
 
-The suite contains **26 passing tests**. Coverage for the application C# code is:
+At the time of this update, the suite contains **26 passing tests**. Coverage for
+the application C# code is:
 
 | Measurement | Result |
 | :--- | :--- |
@@ -219,8 +221,8 @@ the coverage calculation.
 
 ### Manual testing
 
-The deployed and local applications were checked at desktop and mobile viewport
-sizes. The following were verified:
+I also checked the local and deployed applications at desktop and mobile sizes.
+I verified that:
 
 - the calculator accepts valid input and returns the expected result;
 - empty and out-of-range fields show useful validation messages;
@@ -240,6 +242,8 @@ sizes. The following were verified:
 
 ### Issues resolved
 
+These were the main problems I met while finishing the project:
+
 | Issue | Resolution |
 | :--- | :--- |
 | Home and brand links had empty destinations | Both links now target the routed BMI page. |
@@ -250,13 +254,13 @@ sizes. The following were verified:
 
 ### Known bugs
 
-No known functional bugs remain at the time of this README update.
+I have not found any remaining functional bugs in the current version.
 
 ## Deployment
 
 ### Azure deployment
 
-The production application is hosted at:
+I deployed the production application at:
 
 <https://a00086200-bmi2026.azurewebsites.net>
 
@@ -308,14 +312,13 @@ Use the local address printed by `dotnet run` to open the application.
 
 ## Credits
 
-The application was written specifically for this practice project. The
-third-party libraries stored under `wwwroot/lib` retain their original licence
-files. Links to the main frameworks and tools are provided in the
-[Technologies used](#technologies-used) section.
+I wrote the application for this practice project. The third-party libraries in
+`wwwroot/lib` keep their original licence files. Links to the main frameworks
+and tools are listed in [Technologies used](#technologies-used).
 
 ## Acknowledgements
 
-Thanks to **Gary Clynch** for tutoring and guidance during the TU Dublin
+Thank you to **Gary Clynch** for his tutoring and guidance during the TU Dublin
 Micro-credential in CI/CD (DevOps).
 
 ## Disclaimer
